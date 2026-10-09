@@ -3,59 +3,44 @@
 //
 
 #include "Queue.h"
-
 #include <stdexcept>
 
-Queue::Queue() {
-    head = nullptr;
-    tail = nullptr;
-}
-
-void Queue::clear() {
-    while (head != nullptr) {
-        Node *temp = head;
-        head = head->next;
-        delete temp;
-    }
-    tail = nullptr;
-}
-
-Queue::~Queue() {
-    clear();
-}
-
-bool Queue::empty() const {
-    return head == nullptr;
-}
-
-int Queue::front() {
-    if (empty())
-        throw std::underflow_error("Queue is empty!");
-    return head->data;
+void Queue::swap(Queue& other) {
+    std::swap(head_, other.head_);
+    std::swap(tail_, other.tail_);
+    std::swap(size_, other.size_);
 }
 
 void Queue::push(const int value) {
-    Node *temp = new Node;
-    temp->data = value;
-    temp->next = nullptr;
-
-    if (tail == nullptr) {
-        head = temp;
-        tail = temp;
-    } else {
-        tail->next = temp;
-        tail = temp;
-    }
+    Node *node = new Node(value);
+    if (tail_ == nullptr) head_ = node;
+    else tail_->next = node;
+    tail_ = node;
+    ++size_;
 }
 
-void Queue::pop() {
-    if (empty())
+int Queue::pop() {
+    if (isEmpty())
         throw std::underflow_error("Queue is empty!");
 
-    Node *temp = head;
-    head = head->next;
-    delete temp;
+    Node *old = head_;
+    int value = old->data;
+    head_ = head_->next;
 
-    if (empty())
-        tail = nullptr;
+    if (head_ == nullptr)
+        tail_ = nullptr;
+
+    delete old;
+    --size_;
+    return value;
+}
+
+void Queue::clear() {
+    while (head_ != nullptr) {
+        Node* next = head_->next;
+        delete head_;
+        head_ = next;
+    }
+    tail_ = nullptr;
+    size_ = 0;
 }
