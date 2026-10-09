@@ -10,21 +10,36 @@ private:
     struct Node {
         int data;
         Node *next;
+        explicit Node(int d) : data(d), next(nullptr) {}
     };
-    Node *head;
-    Node *tail;
+    Node *head_;
+    Node *tail_;
+    int size_;
 
 public:
-    Queue();
-    ~Queue();
+    Queue(): head_(nullptr), tail_(nullptr), size_(0) {}
 
-    void clear();
-    int front();
-    bool empty() const;
+    Queue(const Queue& other) : head_(nullptr), tail_(nullptr), size_(0) {
+        for (Node* curr = other.head_; curr != other.tail_; curr = curr->next)
+            push(curr->data);
+    }
+
+    Queue& operator=(Queue other) {
+        swap(other);
+        return *this;
+    }
+
+    ~Queue() { clear(); }
 
     void push(int value);
-    void pop();
+    int pop();
 
+    //вспомогательные методы
+    void clear();
+    void swap(Queue &other);
+
+    bool isEmpty() const { return head_ == nullptr; }
+    int getSize() const { return size_; }
 
 };
 
